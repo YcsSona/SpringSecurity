@@ -1,5 +1,6 @@
 package com.theonewhocode.config;
 
+import com.theonewhocode.model.Authority;
 import com.theonewhocode.model.Customer;
 import com.theonewhocode.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
@@ -35,17 +37,22 @@ public class EazyBankUsernamePwdAuthenticationProvider implements Authentication
         if (!customer.isEmpty()) {
             // matches() : Matches password from user entered credentials with credentials stored in the database
             if (passwordEncoder.matches(pwd, customer.get(0).getPwd())) {
-                List<GrantedAuthority> authorities = new ArrayList<>();
-
-                authorities.add(new SimpleGrantedAuthority(customer.get(0).getRole()));
-                return new UsernamePasswordAuthenticationToken(email, pwd, authorities);
-
+                return new UsernamePasswordAuthenticationToken(email, pwd, getGrantedAuthorities(customer.get(0).getAuthorities()));
             } else {
                 throw new BadCredentialsException("Invalid password!");
             }
         } else {
             throw new BadCredentialsException("No user registered with this details!");
         }
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Authority authority : authorities) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()));
+        }
+
+        return grantedAuthorities;
     }
 
     @Override
