@@ -1,6 +1,7 @@
 package com.theonewhocode.config;
 
 import com.theonewhocode.filter.AuthoritiesLoggingAfterFilter;
+import com.theonewhocode.filter.AuthoritiesLoggingAtFilter;
 import com.theonewhocode.filter.CsrfCookieFilter;
 import com.theonewhocode.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ public class SecurityConfig {
                 // invoke CsrfCookieFilter() after BasicAuthenticationFilter
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests ->
                         requests
