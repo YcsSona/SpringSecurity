@@ -1,9 +1,6 @@
 package com.theonewhocode.config;
 
-import com.theonewhocode.filter.AuthoritiesLoggingAfterFilter;
-import com.theonewhocode.filter.AuthoritiesLoggingAtFilter;
-import com.theonewhocode.filter.CsrfCookieFilter;
-import com.theonewhocode.filter.RequestValidationBeforeFilter;
+import com.theonewhocode.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +15,6 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,6 +55,7 @@ public class SecurityConfig {
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests ->
                         requests
                                 .requestMatchers("/myAccount").hasRole("USER")
